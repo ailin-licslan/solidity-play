@@ -1,0 +1,21 @@
+{
+  "name": "Guku",
+  "description": "This is our Goku, a Super Saiyan. He comes from Dragon Ball",
+  "image":"https://gateway.pinata.cloud/ipfs/QmcKHQzBP6YkPLF7C2pvEg5yfWA15BB37MyZD4LvjsBmxF",
+  "attributes": [
+    {
+      "trait_type": "Base",
+      "value": "Son Goku"
+    },
+    {
+      "trait_type": "Citizenship",
+      "value": "The Planet Vegeta"
+    },
+    {
+      "trait_type": "The levels of the Super Saiyan form",
+      "value": "6"
+    }
+  ]
+}
+
+
