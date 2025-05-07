@@ -1,0 +1,27 @@
+PledgePool.sol 核心逻辑的流程图设计，分为几个关键部分：池子创建、出借流程、借款流程、状态管理和结算。
+
+// 这个流程图展示管理员如何通过多签机制创建一个新的质押池。
+
+[开始]
+   ↓
+[管理员调用 createPoolInfo]
+   ↓
+[检查多签权限 (validCall)] → [失败] → [结束 (抛出错误: "This tx is not approved")]
+   ↓
+[成功]
+   ↓
+[验证参数]
+   ↓
+[endTime > settleTime?] → [否] → [结束 (抛出错误: "end time grate than settle time")]
+   ↓
+[是]
+   ↓
+[spToken 和 jpToken 非零地址?] → [否] → [结束 (抛出错误: "is zero address")]
+   ↓
+[是]
+   ↓
+[创建 PoolBaseInfo 和 PoolDataInfo]
+   ↓
+[设置状态为 MATCH]
+   ↓
+[结束]

@@ -1,0 +1,75 @@
+PledgePool.sol 核心逻辑的流程图设计，分为几个关键部分：池子创建、出借流程、借款流程、状态管理和结算。
+
+//展示借款人（Borrower）的完整流程，类似于出借流程。
+//借款人与出借流程类似，但涉及抵押品（borrowToken）和贷款（lendToken）。
+//jpCoin 表示借款份额，提取时销毁以换回剩余抵押品。
+
+
+
+[开始]
+   ↓
+[借款人调用 depositBorrow]
+   ↓
+[状态为 MATCH 且时间 < settleTime?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[存款金额 > 0?] → [否] → [结束 (抛出错误: "deposit amount is zero")]
+   ↓
+[是]
+   ↓
+[存入 borrowToken (SafeTransfer.getPayableAmount)]
+   ↓
+[更新 BorrowInfo.stakeAmount 和 borrowSupply]
+   ↓
+[触发 DepositBorrow 事件]
+   ↓
+[等待结算 (settle)]
+   ↓
+[借款人调用 refundBorrow]
+   ↓
+[状态为 EXECUTION/FINISH/LIQUIDATION 且时间 > settleTime?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[stakeAmount > 0 且 未退款?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[计算退款金额 (超额抵押 * 用户份额)]
+   ↓
+[执行退款 (SafeTransfer._redeem)]
+   ↓
+[触发 RefundBorrow 事件]
+   ↓
+[借款人调用 claimBorrow]
+   ↓
+[stakeAmount > 0 且 未领取?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[铸造 jpCoin (DebtToken.mint)]
+   ↓
+[发放贷款 (lendToken * 用户份额)]
+   ↓
+[触发 ClaimBorrow 事件]
+   ↓
+[等待状态变为 FINISH 或 LIQUIDATION]
+   ↓
+[借款人调用 withdrawBorrow]
+   ↓
+[jpAmount > 0?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[销毁 jpCoin (DebtToken.burn)]
+   ↓
+[状态为 FINISH?] → [是] → [提取 finishAmountBorrow * 份额]
+   ↓                                 ↓
+[状态为 LIQUIDATION?] → [是] → [提取 liquidationAmounBorrow * 份额]
+   ↓                                 ↓
+[执行提取 (SafeTransfer._redeem)]
+   ↓
+[触发 WithdrawBorrow 事件]
+   ↓
+[结束]
