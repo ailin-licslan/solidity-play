@@ -1,37 +1,32 @@
 PledgePool.sol 核心逻辑的流程图设计，分为几个关键部分：池子创建、出借流程、借款流程、状态管理和结算。
 
-//展示出借人（Lender）的完整流程，包括存款、退款、领取 SP Token 和提取
-//出借人从存款开始，经历退款、领取份额代币（spCoin），最后提取本金和利息。
-//每个步骤都有条件检查，确保状态和时间符合要求。
-//SafeTransfer 确保代币转账安全。
+//展示借款人（Borrower）的完整流程，类似于出借流程。
+//借款人与出借流程类似，但涉及抵押品（borrowToken）和贷款（lendToken）。
+//jpCoin 表示借款份额，提取时销毁以换回剩余抵押品。
 
 
 
 [开始]
    ↓
-[出借人调用 depositLend]
+[借款人调用 depositBorrow]
    ↓
 [状态为 MATCH 且时间 < settleTime?] → [否] → [结束 (抛出错误)]
    ↓
 [是]
    ↓
-[存款金额 <= (maxSupply - lendSupply)?] → [否] → [结束 (抛出错误: "数量超过限制")]
+[存款金额 > 0?] → [否] → [结束 (抛出错误: "deposit amount is zero")]
    ↓
 [是]
    ↓
-[金额 > minAmount?] → [否] → [结束 (抛出错误: "少于最小金额")]
+[存入 borrowToken (SafeTransfer.getPayableAmount)]
    ↓
-[是]
+[更新 BorrowInfo.stakeAmount 和 borrowSupply]
    ↓
-[存入 lendToken (SafeTransfer.getPayableAmount)]
-   ↓
-[更新 LendInfo.stakeAmount 和 lendSupply]
-   ↓
-[触发 DepositLend 事件]
+[触发 DepositBorrow 事件]
    ↓
 [等待结算 (settle)]
    ↓
-[出借人调用 refundLend]
+[借款人调用 refundBorrow]
    ↓
 [状态为 EXECUTION/FINISH/LIQUIDATION 且时间 > settleTime?] → [否] → [结束 (抛出错误)]
    ↓
@@ -41,38 +36,40 @@ PledgePool.sol 核心逻辑的流程图设计，分为几个关键部分：池�
    ↓
 [是]
    ↓
-[计算退款金额 (超额存款 * 用户份额)]
+[计算退款金额 (超额抵押 * 用户份额)]
    ↓
 [执行退款 (SafeTransfer._redeem)]
    ↓
-[触发 RefundLend 事件]
+[触发 RefundBorrow 事件]
    ↓
-[出借人调用 claimLend]
+[借款人调用 claimBorrow]
    ↓
 [stakeAmount > 0 且 未领取?] → [否] → [结束 (抛出错误)]
    ↓
 [是]
    ↓
-[铸造 spCoin (DebtToken.mint)]
+[铸造 jpCoin (DebtToken.mint)]
    ↓
-[触发 ClaimLend 事件]
+[发放贷款 (lendToken * 用户份额)]
+   ↓
+[触发 ClaimBorrow 事件]
    ↓
 [等待状态变为 FINISH 或 LIQUIDATION]
    ↓
-[出借人调用 withdrawLend]
+[借款人调用 withdrawBorrow]
    ↓
-[spAmount > 0?] → [否] → [结束 (抛出错误)]
+[jpAmount > 0?] → [否] → [结束 (抛出错误)]
    ↓
 [是]
    ↓
-[销毁 spCoin (DebtToken.burn)]
+[销毁 jpCoin (DebtToken.burn)]
    ↓
-[状态为 FINISH?] → [是] → [提取 finishAmountLend * 份额]
+[状态为 FINISH?] → [是] → [提取 finishAmountBorrow * 份额]
    ↓                                 ↓
-[状态为 LIQUIDATION?] → [是] → [提取 liquidationAmounLend * 份额]
+[状态为 LIQUIDATION?] → [是] → [提取 liquidationAmounBorrow * 份额]
    ↓                                 ↓
 [执行提取 (SafeTransfer._redeem)]
    ↓
-[触发 WithdrawLend 事件]
+[触发 WithdrawBorrow 事件]
    ↓
 [结束]

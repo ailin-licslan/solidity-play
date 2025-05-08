@@ -1,27 +1,78 @@
 PledgePool.sol 核心逻辑的流程图设计，分为几个关键部分：池子创建、出借流程、借款流程、状态管理和结算。
 
-// 这个流程图展示管理员如何通过多签机制创建一个新的质押池。
+//展示出借人（Lender）的完整流程，包括存款、退款、领取 SP Token 和提取
+//出借人从存款开始，经历退款、领取份额代币（spCoin），最后提取本金和利息。
+//每个步骤都有条件检查，确保状态和时间符合要求。
+//SafeTransfer 确保代币转账安全。
+
+
 
 [开始]
    ↓
-[管理员调用 createPoolInfo]
+[出借人调用 depositLend]
    ↓
-[检查多签权限 (validCall)] → [失败] → [结束 (抛出错误: "This tx is not approved")]
-   ↓
-[成功]
-   ↓
-[验证参数]
-   ↓
-[endTime > settleTime?] → [否] → [结束 (抛出错误: "end time grate than settle time")]
+[状态为 MATCH 且时间 < settleTime?] → [否] → [结束 (抛出错误)]
    ↓
 [是]
    ↓
-[spToken 和 jpToken 非零地址?] → [否] → [结束 (抛出错误: "is zero address")]
+[存款金额 <= (maxSupply - lendSupply)?] → [否] → [结束 (抛出错误: "数量超过限制")]
    ↓
 [是]
    ↓
-[创建 PoolBaseInfo 和 PoolDataInfo]
+[金额 > minAmount?] → [否] → [结束 (抛出错误: "少于最小金额")]
    ↓
-[设置状态为 MATCH]
+[是]
+   ↓
+[存入 lendToken (SafeTransfer.getPayableAmount)]
+   ↓
+[更新 LendInfo.stakeAmount 和 lendSupply]
+   ↓
+[触发 DepositLend 事件]
+   ↓
+[等待结算 (settle)]
+   ↓
+[出借人调用 refundLend]
+   ↓
+[状态为 EXECUTION/FINISH/LIQUIDATION 且时间 > settleTime?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[stakeAmount > 0 且 未退款?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[计算退款金额 (超额存款 * 用户份额)]
+   ↓
+[执行退款 (SafeTransfer._redeem)]
+   ↓
+[触发 RefundLend 事件]
+   ↓
+[出借人调用 claimLend]
+   ↓
+[stakeAmount > 0 且 未领取?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[铸造 spCoin (DebtToken.mint)]
+   ↓
+[触发 ClaimLend 事件]
+   ↓
+[等待状态变为 FINISH 或 LIQUIDATION]
+   ↓
+[出借人调用 withdrawLend]
+   ↓
+[spAmount > 0?] → [否] → [结束 (抛出错误)]
+   ↓
+[是]
+   ↓
+[销毁 spCoin (DebtToken.burn)]
+   ↓
+[状态为 FINISH?] → [是] → [提取 finishAmountLend * 份额]
+   ↓                                 ↓
+[状态为 LIQUIDATION?] → [是] → [提取 liquidationAmounLend * 份额]
+   ↓                                 ↓
+[执行提取 (SafeTransfer._redeem)]
+   ↓
+[触发 WithdrawLend 事件]
    ↓
 [结束]
