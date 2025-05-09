@@ -6,7 +6,7 @@ import "../multiSignature/multiSignatureClient.sol";
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 
 
-
+//清算时获取链上的数据  chain link
 contract BscPledgeOracle is multiSignatureClient {
 
     mapping(uint256 => AggregatorV3Interface) internal assetsMap;

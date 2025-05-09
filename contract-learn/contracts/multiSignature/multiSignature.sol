@@ -39,6 +39,7 @@ library whiteListAddress{
 }
 
 
+//实现某个人对某个合约操作进行多签（签名）操作   这个和多签钱包有些区别
 contract multiSignature  is multiSignatureClient {
     uint256 private constant defaultIndex = 0;
     using whiteListAddress for address[];
@@ -74,11 +75,13 @@ contract multiSignature  is multiSignatureClient {
         return index;
     }
 
+    //维护一个白名单列表
     function signApplication(bytes32 msghash) external onlyOwner validIndex(msghash,defaultIndex){
         emit SignApplication(msg.sender,msghash,defaultIndex);
         signatureMap[msghash][defaultIndex].signatures.addWhiteListAddress(msg.sender);
     }
 
+    //感觉有安全隐患  想撤回之前的签名
     function revokeSignApplication(bytes32 msghash) external onlyOwner validIndex(msghash,defaultIndex){
         emit RevokeApplication(msg.sender,msghash,defaultIndex);
         signatureMap[msghash][defaultIndex].signatures.removeWhiteListAddress(msg.sender);
