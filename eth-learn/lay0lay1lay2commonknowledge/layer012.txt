@@ -1,0 +1,55 @@
+//What are Layer 0s, Layer 1s, and Layer 2s in Blockchain Technology?
+https://www.youtube.com/watch?v=25V3Ik8DOZA
+LAYER0: 波卡 排插 中继链 区块链底层协议
+LAYER1: BTC ETH SOL ... 各种公链  区块链基础架构
+LAYER2: (主要围绕ETH生态 将LAYER1上面的交易挪下链的交易可以理解为LAYER2,之后再回到LAYER1) ====>  ZK-ROLLUP、OPTIMISTIC-ROLLUP、STATE-CHANNEL==>状态通道、PLASMA、VALIDIUM
+
+//LAYER 2指南（上）
+https://www.youtube.com/watch?v=zozc45tNWgU
+//LAYER 2指南（下）- 技术方向 OPTIMISTIC-ROLLUP, ZK-ROLLUP, VALIDIUM分别是什么？优劣势？各自的主流项目有什么？
+https://www.youtube.com/watch?v=ZIH-6w6SaOE
+
+
+LAYER 2的定义与作用：
+    LAYER 2是指构建在主区块链（Layer 1，如以太坊）之上的技术，用于处理交易、降低成本并提高速度。
+    它通过将部分计算和数据处理移出主链（off-chain），在保持安全性的同时优化用户体验。
+    常见目标：降低Gas费用、提高每秒交易量（TPS）、改善去中心化应用的可用性。
+
+
+VALIDIUM:  一定程度上结合状态通道和PLASMA
+ZK-ROLLUP: loopring (路印科技)  zkSync、StarkNet  使用零知识证明，安全性更高，适合特定应用（如支付）。
+OPTIMISTIC-ROLLUP :  Arbitrum、Optimism  假设交易有效，仅在争议时验证，适合通用智能合约。
+状态通道（State Channels）：适合高频、低价值交易，如支付或游戏。
+侧链（Sidechains）：如Polygon(Matic)，独立于主链运行但与之桥接。  比较特殊的一种 也可以单独划分
+Plasma：早期方案，数据存储在子链上，但安全性挑战较多。
+
+
+LAYER 2的优势与挑战：
+优势：
+    显著降低交易费用（Gas Fee），有时可降至主链的1/10甚至更低。
+    提高交易吞吐量，支持更多用户和DApp。
+    保留以太坊主链的安全性和去中心化特性。
+挑战：
+    数据可用性问题：如Optimistic Rollups的延迟验证（7天挑战期）。
+    跨链互操作性：不同Layer 2方案之间的资产转移可能复杂。
+    用户体验：需要用户学习新工具（如钱包、桥接操作）。
+    
+
+
+
+//跨链桥 上
+https://www.youtube.com/watch?v=iEEQASTDtPM
+//跨链桥 下
+https://www.youtube.com/watch?v=dJihFC0NKCw
+
+//侧链
+https://www.youtube.com/watch?v=xBcnhA8uuKI
+
+//dao
+https://www.youtube.com/watch?v=PYJXYBDUG50
+
+//共识机制
+https://www.youtube.com/watch?v=vYZEeSxJlkM
+
+//What is MEV? How Serious are the Threats of MEV?
+https://www.youtube.com/watch?v=ZgzM9dMvmdw
